@@ -7,7 +7,7 @@ from core.helper import EmailMsg
 class EmailRecipientsSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailRecipients
-        fields = "__all__"
+        exclude = ["id", "email_send"]
 
 
 class EmailSendSerializer(serializers.ModelSerializer):
@@ -16,15 +16,16 @@ class EmailSendSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailSend
         fields = "__all__"
+        read_only_fields = ["status"]
 
-    # def to_internal_value(self, data):
-    #     return {
-    #         "email": EmailMsg(
-    #             data.subject, data.message, data.email_from, data.email_to, data.timeout
-    #         ),
-    #     }
-
-    # def create(self, validated_data):
-    #     email = EmailSend.create(validated_data["email"])
-    #     EmailRecipients.create(validated_data["email"], email)
-    #     return email
+    def create(self, validated_data):
+        email_msg = EmailMsg(
+            validated_data["subject"],
+            validated_data["message"],
+            validated_data["email_from"],
+            [i["email"] for i in validated_data["email_to"]],
+            validated_data["timeout"],
+        )
+        email = EmailSend.create(email_msg)
+        EmailRecipients.create(email_msg, email)
+        return email
