@@ -16,13 +16,12 @@ class EmailSendSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailSend
         fields = "__all__"
-        read_only_fields = ["status"]
+        read_only_fields = ["status", "email_from"]
 
     def create(self, validated_data):
         email_msg = EmailMsg(
             validated_data["subject"],
             validated_data["message"],
-            validated_data["email_from"],
             [i["email"] for i in validated_data["email_to"]],
             validated_data["timeout"],
         )

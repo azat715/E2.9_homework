@@ -6,9 +6,7 @@ from rest_framework.test import APIClient
 
 @pytest.fixture(scope="session", name="email_msg")
 def fixture_email_msg():
-    return EmailMsg(
-        "testing", "my message", "hiTSJ5V7@protonmail.com", ["azat715@gmail.com"], 1
-    )
+    return EmailMsg("testing", "my message", ["azat715@gmail.com"], 1)
 
 
 @pytest.fixture(scope="session", name="content")
