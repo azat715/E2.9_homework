@@ -26,9 +26,6 @@ def fixture_post_email():
     return {
         "subject": "testing",
         "message": "my message",
-        "email_from": "hiTSJ5V7@protonmail.com",
-        "timeout": 2,
-        "email_to": [
-            {"email": "azat715@gmail.com"},
-        ],
+        "timeout": "00:00:02",
+        "email_to": "azat715@gmail.com, azar@gog.com, dfdf@fog.ru",
     }
