@@ -1,0 +1,62 @@
+{% extends "./base.html" %}
+
+{% block content %}
+<h4>Отправка Email</h4>
+<div x-data="sendEmail()" x-init="fetchEmails()" class="app">
+    <button class="btn btn-link" @click="tab = 'list', fetchEmails()">Список задач</button>
+    <button class="btn btn-link" @click="tab = 'form'">Отправить Email</button>
+    <div class="w-75" x-show="tab === 'list'">
+        <ul class="list-group">
+            <template x-for="email in emails" :key="email.id">
+                <li class="list-group-item">
+                    <div>
+                        <span x-text="email.subject"></span>
+                    </div>
+                    <div x-show="email.status === 1">
+                        <span>отправлен</span>
+                    </div>
+                </li>
+            </template>
+        </ul>
+    </div>
+    <div class="w-75" x-show="tab === 'form'">
+        <form id="form" action="" @submit.prevent="sendEmail()">
+            <div class="mb-3">
+                <label class="form-label" for="subject">Тема письма</label>
+                <input class="form-control" type="text" name="subject" id="subject" maxlength=78 required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="message">Сообщение</label>
+                <textarea class="form-control" name="message" id="message" cols="30" rows="10" maxlength=255
+                    required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="email_to">Cписок получателей</label>
+                <input class="form-control" type="email" name="email_to" id="email_to" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="timeout">Задержка отправки</label>
+                <input class="form-control" type="time" name="timeout" id="timeout" step="1">
+            </div>
+            <div class="d-flex flex-row-reverse">
+                <button class="btn btn-primary" type="submit">ОК</button>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal" tabindex="-1" id="Result">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <span>Email добавлен в очередь на отправку</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        :onclick="`location.href='/'`">Ок</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
