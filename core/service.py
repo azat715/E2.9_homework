@@ -21,6 +21,7 @@ class SenderEmail(multiprocessing.Process):
 
     def run(self):
         logger.info("Запуск потока")
+        logger.info(self.msg)
         time.sleep(self.timeout)
         send_mail(
             self.msg.subject,
@@ -29,6 +30,7 @@ class SenderEmail(multiprocessing.Process):
             self.msg.email_to,
             self.msg.fail_silently,
         )
+
         with lock:
             email = EmailSend.objects.get(pk=self.pk)
             email.status = EmailStatus.DELIVERED

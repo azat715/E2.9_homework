@@ -33,7 +33,7 @@ class EmailSend(models.Model):
         return EmailMsg(
             self.subject,
             self.message,
-            [i for i in self.email_to.values_list("email", flat=True)],
+            [i["email"] for i in self.email_to.values()],
             self.timeout,
         )
 
