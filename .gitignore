@@ -153,5 +153,4 @@ dmypy.json
 # poetry
 poetry.lock
 
-*.txt
 *.db

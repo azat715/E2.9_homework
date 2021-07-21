@@ -13,25 +13,33 @@ lock = multiprocessing.Lock()
 
 
 class SenderEmail(multiprocessing.Process):
-    def __init__(self, msg: EmailMsg, pk):
+    def __init__(self):
         super().__init__()
-        self.msg = msg
-        self.timeout = msg.timeout
-        self.pk = pk
+        self.queue = multiprocessing.Queue()
 
-    def run(self):
-        logger.info("Запуск потока")
-        logger.info(self.msg)
-        time.sleep(self.timeout)
+    def send(self, msg: EmailMsg, pk):
+        timeout = int(msg.timeout)
+        task = {"msg": msg, "pk": pk}
+        self.queue.put(task, timeout)
+
+    def dispatch(self, task):
+        msg = task["msg"]
+        pk = task["pk"]
         send_mail(
-            self.msg.subject,
-            self.msg.message,
-            self.msg.email_from,
-            self.msg.email_to,
-            self.msg.fail_silently,
+            msg.subject,
+            msg.message,
+            msg.email_from,
+            msg.email_to,
+            msg.fail_silently,
         )
 
         with lock:
-            email = EmailSend.objects.get(pk=self.pk)
+            email = EmailSend.objects.get(pk=pk)
             email.status = EmailStatus.DELIVERED
             email.save()
+
+    def run(self):
+        while True:
+            logger.info("Запуск потока")
+            task = self.queue.get()
+            self.dispatch(task)
