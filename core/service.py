@@ -9,8 +9,6 @@ from core.helper import EmailMsg
 
 logger = app_logger.get_logger(__name__)
 
-lock = multiprocessing.Lock()
-
 
 class SenderEmail(multiprocessing.Process):
     def __init__(self):
@@ -32,11 +30,6 @@ class SenderEmail(multiprocessing.Process):
             msg.email_to,
             msg.fail_silently,
         )
-
-        with lock:
-            email = EmailSend.objects.get(pk=pk)
-            email.status = EmailStatus.DELIVERED
-            email.save()
 
     def run(self):
         while True:
