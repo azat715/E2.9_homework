@@ -9,30 +9,24 @@ from core.helper import EmailMsg
 
 logger = app_logger.get_logger(__name__)
 
+lock = multiprocessing.Lock()
+
 
 class SenderEmail(multiprocessing.Process):
-    def __init__(self):
+    def __init__(self, msg: EmailMsg, pk):
         super().__init__()
-        self.queue = multiprocessing.Queue()
-
-    def send(self, msg: EmailMsg, pk):
-        timeout = int(msg.timeout)
-        task = {"msg": msg, "pk": pk}
-        self.queue.put(task, timeout)
-
-    def dispatch(self, task):
-        msg = task["msg"]
-        pk = task["pk"]
-        send_mail(
-            msg.subject,
-            msg.message,
-            msg.email_from,
-            msg.email_to,
-            msg.fail_silently,
-        )
+        self.msg = msg
+        self.timeout = msg.timeout
+        self.pk = pk
 
     def run(self):
-        while True:
-            logger.info("Запуск потока")
-            task = self.queue.get()
-            self.dispatch(task)
+        logger.info("Запуск потока")
+        logger.info(self.msg)
+        time.sleep(self.timeout)
+        send_mail(
+            self.msg.subject,
+            self.msg.message,
+            self.msg.email_from,
+            self.msg.email_to,
+            self.msg.fail_silently,
+        )
